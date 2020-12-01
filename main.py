@@ -8,7 +8,7 @@ pres_filenames = ['A_pres_InVS13', 'A_pres_InVS15', 'A_pres_LH10', 'A_pres_LyonS
 cont_filenames = ['A_lnVS13', 'A_lnVS15', 'A_LH10', 'A_LyonSchool', 'A_SFHH', 'A_Thiers13']
 
 # Choosing Contact vs. Presence Network
-contact = False
+contact = True
 
 # Defining variables for type of network
 if contact == True:
