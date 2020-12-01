@@ -8,7 +8,7 @@ pres_filenames = ['A_pres_InVS13', 'A_pres_InVS15', 'A_pres_LH10', 'A_pres_LyonS
 cont_filenames = ['A_lnVS13', 'A_lnVS15', 'A_LH10', 'A_LyonSchool', 'A_SFHH', 'A_Thiers13']
 
 # Choosing Contact vs. Presence Network
-contact = True
+contact = False
 
 # Defining variables for type of network
 if contact == True:
@@ -73,14 +73,14 @@ def main():
 		deg_vector = net.degD
 
 		# Plotting the Histograms
-		plt.suptitle(title)
+		plt.suptitle(title, fontsize=30)
 		plt.subplot(3, 2, i + 1)
 		plt.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
 		plt.title(name)
 		plt.xlabel('Degree')
 
 	# Cleaning up figure
-	plt.tight_layout()
+	plt.subplots_adjust(hspace=0.4, wspace = 0.1)
 	plt.show()
 
 # ========================================================
