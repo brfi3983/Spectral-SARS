@@ -45,6 +45,9 @@ class NetworkStat():
 	def clusterCoeff(self):
 		pass
 
+def SIR(A, B, mu, del_t, V):
+	pass
+
 # ========================================================
 def main():
 
@@ -78,6 +81,16 @@ def main():
 		plt.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
 		plt.title(name)
 		plt.xlabel('Degree')
+
+		## SIR Model for Matrix A (100 simulations)
+		k_arr = [1, 2, 3, 4, 5]
+		B = 4e-4
+		for j in range(100):
+			for k in k_arr:
+				break
+				mu = 100 * B / k
+				del_t = 1 / (B * np.median(A))
+				q = mu*del_t
 
 	# Cleaning up figure
 	plt.subplots_adjust(hspace=0.4, wspace = 0.1)
