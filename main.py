@@ -56,8 +56,8 @@ def main():
 
 	# Titles for figures
 	fig1.suptitle(title, fontsize=30)
-	fig2.suptitle(f'Graph\'s for {title}', fontsize=30)
-	fig3.suptitle(f'Eigenvalues for {title}', fontsize=30)
+	fig2.suptitle(f'Eigenvalues for {title}', fontsize=30)
+	fig3.suptitle(f'Graph\'s for {title}', fontsize=30)
 
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	for i, name in enumerate(filenames):
@@ -86,32 +86,32 @@ def main():
 		net.degreeDis()
 		deg_vector = net.degD
 
-		# Plotting the Histograms
+		# Plotting the Degree Histograms
 		ax1 = fig1.add_subplot(3, 2, i + 1)
 		ax1.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
 		ax1.set_title(name)
 		ax1.set_xlabel('Degree')
 
-		# Plotting the Graphs
-		ax2 = fig2.add_subplot(3, 2, i + 1)
-		nx.draw(G, node_color=range(A.shape[0]), ax=ax2)
-		ax2.set_title(name)
-
 		# Plotting the Histogram of Eigenvalues
 		w, v = LA.eig(A)
+		ax2 = fig2.add_subplot(3, 2, i + 1)
+		ax2.hist(w, color='black', ec='white', bins=net.n)
+		ax2.set_title(name)
+		ax2.set_xlabel('Eigenvalues')
+
+		# Plotting the Graphs
 		ax3 = fig3.add_subplot(3, 2, i + 1)
-		ax3.hist(w, color='black', ec='white', bins=net.n)
+		nx.draw(G, node_color=range(A.shape[0]), ax=ax3)
 		ax3.set_title(name)
-		ax3.set_xlabel('Eigenvalues')
 
 	# Cleaning up figure
 	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
-	fig3.subplots_adjust(hspace=0.4, wspace=0.1)
+	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
 
 	# Saving Figures
-	fig1.savefig(f'./figures/hist_{folder}.png')
-	fig2.savefig(f'./figures/graph_{folder}.png')
-	fig3.savefig(f'./figures/eig_{folder}.png')
+	# fig1.savefig(f'./figures/hist_{folder}.png')
+	# fig2.savefig(f'./figures/graph_{folder}.png')
+	# fig3.savefig(f'./figures/eig_{folder}.png')
 
 	plt.show()
 
