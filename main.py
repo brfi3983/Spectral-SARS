@@ -62,8 +62,8 @@ def main():
 	fig2 = plt.figure(figsize=(16,9))
 
 	# Figure titles
-	fig1.suptitle(f'Degree Distribution for {title}', fontsize=30)
-	fig2.suptitle(f'Clustering Distribution for {title}', fontsize=30)
+	fig1.suptitle(f'Degree\'s for {title}', fontsize=30)
+	fig2.suptitle(f'Clustering for {title}', fontsize=30)
 
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	for i, name in enumerate(filenames):
