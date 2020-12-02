@@ -49,6 +49,14 @@ class NetworkStat():
 # ========================================================
 def main():
 
+	fig1 = plt.figure()
+	fig2 = plt.figure()
+	fig3 = plt.figure()
+
+	fig1.suptitle(title, fontsize=30)
+	fig2.suptitle(f'Graph\'s for {title}', fontsize=30)
+	fig3.suptitle(f'Eigenvalue Histograms', fontsize=30)
+
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	for i, name in enumerate(filenames):
 
@@ -56,13 +64,7 @@ def main():
 		A = np.genfromtxt('./' + str(folder) + '/' + str(name) + '.csv', delimiter=',')
 
 		# Printing Graph (testing)
-		# AA = np.ones((3, 3))
-		# AA[0,2] = 0
-		# AA[2,1] = 0
 		G = nx.Graph(A)
-		nx.draw(G, node_color=range(A.shape[0]))
-		plt.show()
-		exit()
 
 		# Turning matrix into an Object
 		print('\n========================================================')
@@ -78,19 +80,31 @@ def main():
 		net.domEig()
 		print(f' Dominant Eigenvalue: {net.lam:0.3f}')
 
-		# Dominant Eigenvalue
+		# Degree Distribution
 		net.degreeDis()
 		deg_vector = net.degD
 
 		# Plotting the Histograms
-		plt.suptitle(title, fontsize=30)
-		plt.subplot(3, 2, i + 1)
-		plt.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
-		plt.title(name)
-		plt.xlabel('Degree')
+		ax1 = fig1.add_subplot(3, 2, i + 1)
+		ax1.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
+		ax1.set_title(name)
+		ax1.set_xlabel('Degree')
+
+		# Plotting the Graphs
+		ax2 = fig2.add_subplot(3, 2, i + 1)
+		nx.draw(G, node_color=range(A.shape[0]), ax=ax2)
+		ax2.set_title(name)
+
+		# Plotting the Histogram of Eigenvalues
+		w, v = LA.eig(A)
+		ax3 = fig3.add_subplot(3, 2, i + 1)
+		ax3.hist(w, color='black', ec='white', bins=net.n)
+		ax3.set_title(name)
+		ax3.set_xlabel('Eigenvalues')
 
 	# Cleaning up figure
-	plt.subplots_adjust(hspace=0.4, wspace = 0.1)
+	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
+	fig3.subplots_adjust(hspace=0.4, wspace = 0.1)
 	plt.show()
 
 # ========================================================
