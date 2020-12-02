@@ -4,14 +4,9 @@ import numpy.random as rand
 # A is the adjacency matrix as a numpy array.
 # Vaccination not yet implemented
 class SIR_class():
-    def __init__(self, A)
+    def __init__(self, A):
         self.A = A
         self.n = A.shape[0]
-
-    def begin_epidemic(vaccinate = False):
-
-        #find v_0
-        return rand.randint(0, self.n-1)
 
     def SIR(beta, mu, delta_t, T, v_0, vaccinated = False):
         # Initialize variables
@@ -22,7 +17,7 @@ class SIR_class():
         susceptible_nodes = np.r_[0:(self.A.shape[0] - 1):1] # all nodes susceptible at first
         susceptible_nodes.remove(v_0)   # remove first infected
 
-        infectious_nodes = [v_0]
+        infectious_nodes = [rand.randint(0, self.n-1)]
         recovered_nodes = np.empty(0)
 
         # Main loop

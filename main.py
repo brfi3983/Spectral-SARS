@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
+from SIR_epidemic import *
+
 plt.style.use('ggplot')
 
 # Importing Networks
@@ -45,9 +47,6 @@ class NetworkStat():
 	def clusterCoeff(self):
 		pass
 
-def SIR(A, B, mu, del_t, V):
-	pass
-
 # ========================================================
 def main():
 
@@ -83,14 +82,8 @@ def main():
 		plt.xlabel('Degree')
 
 		## SIR Model for Matrix A (100 simulations)
-		k_arr = [1, 2, 3, 4, 5]
-		B = 4e-4
-		for j in range(100):
-			for k in k_arr:
-				break
-				mu = 100 * B / k
-				del_t = 1 / (B * np.median(A))
-				q = mu*del_t
+		SIR_model = SIR_class(A)
+		# implement for loop...
 
 	# Cleaning up figure
 	plt.subplots_adjust(hspace=0.4, wspace = 0.1)
