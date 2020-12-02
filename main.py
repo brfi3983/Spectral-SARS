@@ -57,8 +57,8 @@ class NetworkStat():
 def main():
 
 	# Figures for two plots
-	fig1 = plt.figure()
-	fig2 = plt.figure()
+	fig1 = plt.figure(figsize=(16,9))
+	fig2 = plt.figure(figsize=(16,9))
 
 	# Figure titles
 	fig1.suptitle(f'Degree Distribution for {title}', fontsize=30)
