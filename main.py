@@ -9,7 +9,7 @@ pres_filenames = ['A_pres_InVS13', 'A_pres_InVS15', 'A_pres_LH10', 'A_pres_LyonS
 cont_filenames = ['A_lnVS13', 'A_lnVS15', 'A_LH10', 'A_LyonSchool', 'A_SFHH', 'A_Thiers13']
 
 # Choosing Contact vs. Presence Network
-contact = True
+contact = False
 
 # Defining variables for type of network
 if contact == True:
@@ -49,13 +49,15 @@ class NetworkStat():
 # ========================================================
 def main():
 
-	fig1 = plt.figure()
-	fig2 = plt.figure()
-	fig3 = plt.figure()
+	# Initializing figures
+	fig1 = plt.figure(figsize=(16,9))
+	fig2 = plt.figure(figsize=(16,9))
+	fig3 = plt.figure(figsize=(16,9))
 
+	# Titles for figures
 	fig1.suptitle(title, fontsize=30)
 	fig2.suptitle(f'Graph\'s for {title}', fontsize=30)
-	fig3.suptitle(f'Eigenvalue Histograms', fontsize=30)
+	fig3.suptitle(f'Eigenvalues for {title}', fontsize=30)
 
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	for i, name in enumerate(filenames):
@@ -104,7 +106,13 @@ def main():
 
 	# Cleaning up figure
 	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
-	fig3.subplots_adjust(hspace=0.4, wspace = 0.1)
+	fig3.subplots_adjust(hspace=0.4, wspace=0.1)
+
+	# Saving Figures
+	fig1.savefig(f'./figures/hist_{folder}.png')
+	fig2.savefig(f'./figures/graph_{folder}.png')
+	fig3.savefig(f'./figures/eig_{folder}.png')
+
 	plt.show()
 
 # ========================================================
