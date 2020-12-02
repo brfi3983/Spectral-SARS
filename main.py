@@ -1,4 +1,5 @@
 import numpy as np
+import networkx as nx
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
 plt.style.use('ggplot')
@@ -53,6 +54,15 @@ def main():
 
 		# Importing Network
 		A = np.genfromtxt('./' + str(folder) + '/' + str(name) + '.csv', delimiter=',')
+
+		# Printing Graph (testing)
+		# AA = np.ones((3, 3))
+		# AA[0,2] = 0
+		# AA[2,1] = 0
+		G = nx.Graph(A)
+		nx.draw(G, node_color=range(A.shape[0]))
+		plt.show()
+		exit()
 
 		# Turning matrix into an Object
 		print('\n========================================================')
