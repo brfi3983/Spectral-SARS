@@ -8,7 +8,7 @@ pres_filenames = ['A_pres_InVS13', 'A_pres_InVS15', 'A_pres_LH10', 'A_pres_LyonS
 cont_filenames = ['A_lnVS13', 'A_lnVS15', 'A_LH10', 'A_LyonSchool', 'A_SFHH', 'A_Thiers13']
 
 # Choosing Contact vs. Presence Network
-contact = True
+contact = False
 
 # Defining variables for type of network
 if contact == True:
@@ -16,12 +16,13 @@ if contact == True:
 	folder = 'contact_data'
 	title = 'Contact Networks'
 	color = 'red'
+	color2 = 'orange'
 else:
 	filenames = pres_filenames
 	folder = 'presence_data'
 	title = 'Presence Networks'
 	color = 'teal'
-
+	color2 = 'blue'
 # ========================================================
 class NetworkStat():
 	def __init__(self, A):
@@ -100,7 +101,7 @@ def main():
 
 		# Plotting Clustering Histograms
 		ax2 = fig2.add_subplot(3, 2, i + 1)
-		ax2.hist(cc_vec, bins=net.n, ec='white', color='orange')
+		ax2.hist(cc_vec, bins=net.n, ec='white', color=color2)
 		ax2.set_title(name)
 		ax2.set_xlabel('Clustering Coefficient')
 
