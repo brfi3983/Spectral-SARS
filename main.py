@@ -42,11 +42,27 @@ class NetworkStat():
 	def degreeDis(self):
 		self.degD = np.sum(self.data, axis = 1)
 
-	def clusterCoeff(self):
-		pass
+	def cluster(self):
+
+		# Cardinality of the loops (loops are on diagonal)
+		triangles = np.linalg.matrix_power(self.data, 3)
+		diag = np.diag(triangles)
+
+		# Clustering Vector along with coefficient
+		cc_vec = 2 * diag / (self.degD * (self.degD - 1))
+		self.cc_vec = cc_vec[cc_vec < 1e8] # removing infinity values
+		self.cc = np.mean(self.cc_vec)
 
 # ========================================================
 def main():
+
+	# Figures for two plots
+	fig1 = plt.figure()
+	fig2 = plt.figure()
+
+	# Figure titles
+	fig1.suptitle(f'Degree Distribution for {title}', fontsize=30)
+	fig2.suptitle(f'Clustering Distribution for {title}', fontsize=30)
 
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	for i, name in enumerate(filenames):
@@ -72,16 +88,30 @@ def main():
 		net.degreeDis()
 		deg_vector = net.degD
 
-		# Plotting the Histograms
-		plt.suptitle(title, fontsize=30)
-		plt.subplot(3, 2, i + 1)
-		plt.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
-		plt.title(name)
-		plt.xlabel('Degree')
+		# Clustering coefficient and distribution (NOTICE: .cluster() must be run after degree distribution)
+		net.cluster()
+		cc_vec, cc = net.cc_vec, net.cc
+
+		# Plotting Degree Histograms
+		ax1 = fig1.add_subplot(3, 2, i + 1)
+		ax1.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
+		ax1.set_title(name)
+		ax1.set_xlabel('Degree')
+
+		# Plotting Clustering Histograms
+		ax2 = fig2.add_subplot(3, 2, i + 1)
+		ax2.hist(cc_vec, bins=net.n, ec='white', color='orange')
+		ax2.set_title(name)
+		ax2.set_xlabel('Clustering Coefficient')
 
 	# Cleaning up figure
-	plt.subplots_adjust(hspace=0.4, wspace = 0.1)
-	plt.show()
+	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
+	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
+
+	fig1.savefig(f'./figures/deg_{folder}')
+	fig2.savefig(f'./figures/clust_{folder}')
+
+	# plt.show()
 
 # ========================================================
 if __name__ == "__main__":
