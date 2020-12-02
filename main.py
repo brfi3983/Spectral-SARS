@@ -109,11 +109,11 @@ def main():
 	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
 
 	# Saving Figures
-	# fig1.savefig(f'./figures/hist_{folder}.png')
-	# fig2.savefig(f'./figures/graph_{folder}.png')
-	# fig3.savefig(f'./figures/eig_{folder}.png')
+	fig1.savefig(f'./figures/hist_{folder}.png')
+	fig2.savefig(f'./figures/graph_{folder}.png')
+	fig3.savefig(f'./figures/eig_{folder}.png')
 
-	plt.show()
+	# plt.show()
 
 # ========================================================
 if __name__ == "__main__":
