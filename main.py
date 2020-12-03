@@ -50,6 +50,14 @@ class NetworkStat():
 # ========================================================
 def main():
 
+	# figures
+	fig1 = plt.figure()
+	fig2 = plt.figure()
+
+	# figure titles
+	fig1.suptitle(title, fontsize=30)
+	fig2.suptitle('K Values', fontsize=30)
+
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	for i, name in enumerate(filenames):
 
@@ -75,18 +83,44 @@ def main():
 		deg_vector = net.degD
 
 		# Plotting the Histograms
-		plt.suptitle(title, fontsize=30)
-		plt.subplot(3, 2, i + 1)
-		plt.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
-		plt.title(name)
-		plt.xlabel('Degree')
+		ax1 = fig1.add_subplot(3, 2, i + 1)
+		ax1.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
+		ax1.set_title(name)
+		ax1.set_xlabel('Degree')
 
 		## SIR Model for Matrix A (100 simulations)
-		SIR_model = SIR_class(A)
-		# implement for loop...
+		model = SIR_class(A)
+
+		k_arr = [1, 2, 3, 4, 5]
+		B = 4e-4
+		T = 1e3
+		sims = {}
+		for k in k_arr:
+			sim = np.empty(0)
+			for i in range(100):
+				# print(np.median(A), A)
+				mu = 100 * B / k
+				# del_t = 1 / (B * np.median(A))
+				del_t = 1 / (B * 1)
+				# print(B, mu, del_t)
+				# exit()
+				[S, I, R] = model.SIR(B, mu, del_t, T, vaccinated=False)
+				# print(S,I,R)
+				sim = np.append(sim, R)
+
+			sims[str(k)] = sim
+
+			# Plotting distribution of simulations for each k (for each dataset - CREATE NEW FIGURE or overlay histograms...)
+			ax2 = fig2.add_subplot(3, 2, k + 1)
+			ax2.hist(sims[str(k)], bins=net.n, ec='white')
+			ax2.set_title(f'k value of {k}')
+			ax2.set_xlabel('Node in Graph')
+
+		break
 
 	# Cleaning up figure
-	plt.subplots_adjust(hspace=0.4, wspace = 0.1)
+	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
+	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
 	plt.show()
 
 # ========================================================
