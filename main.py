@@ -22,7 +22,8 @@ else:
 	folder = 'presence_data'
 	title = 'Presence Networks'
 	color = 'teal'
-	color2 = 'blue'
+	color2 = 'steelblue'
+
 # ========================================================
 class NetworkStat():
 	def __init__(self, A):
