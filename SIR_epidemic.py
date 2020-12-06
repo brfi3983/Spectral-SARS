@@ -2,7 +2,6 @@ import numpy as np
 import numpy.random as rand
 
 # A is the adjacency matrix as a numpy array.
-# Vaccination not yet implemented
 class SIR_class():
     def __init__(self, A):
         self.A = A
@@ -21,7 +20,7 @@ class SIR_class():
 
         return Y_new
 
-    def SIR(self, beta, mu, delta_t, T, vaccinated=False):
+    def SIR(self, beta, mu, delta_t, T, vaccinated = 0):
 
         # Initialize variables
         num_timesteps = T/delta_t
@@ -37,6 +36,25 @@ class SIR_class():
         S = S[S != v_0]   # remove first infected
         I = np.array([v_0])
         R = np.empty(0)
+
+        # The effect of vaccination (1 = random, 2 = highest degree)
+        if (vaccinated == 1):
+            for v in range(20):
+                vax = rand.randint(0,self.n - 1)
+                S = S[S != vax]
+                R = np.append(R, v)
+        elif (vaccinated == 2):
+            degreelist = np.zeros(self.n)
+            for node in range(self.n):
+                degreelist[node] = numpy.sum(self.A[node])
+            ind = (-degreelist).argsort()[:20]  # finds indexes of 20 largest elements
+            for v in ind:
+                S = S[S != int[v]]
+                R = np.append(R, v)
+
+
+
+
 
         # Main loop
         for t in (1,num_timesteps):
