@@ -20,14 +20,15 @@ class SIR_class():
 
         return Y_new
 
-    def SIR(self, beta, mu, delta_t, T, vaccinated = 0):
+    def SIR(self, beta, mu, T, vaccinated = 0):
 
+        delta_t = 0.001 / beta
         # Initialize variables
         num_timesteps = T/delta_t
-        # q = mu * delta_t
-        # p = beta * delta_t
-        p = 1
-        q = 1
+        q = mu * delta_t
+        p = beta * delta_t
+        #p = 1
+        #q = 1
 
         v_0 = rand.randint(0, self.n - 1)
 
@@ -51,7 +52,6 @@ class SIR_class():
             for v in ind:
                 S = S[S != int[v]]
                 R = np.append(R, v)
-
 
 
 
