@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
+import pandas as pd
+
 plt.style.use('ggplot')
 
 # Importing Networks
@@ -8,7 +10,7 @@ pres_filenames = ['A_pres_InVS13', 'A_pres_InVS15', 'A_pres_LH10', 'A_pres_LyonS
 cont_filenames = ['A_lnVS13', 'A_lnVS15', 'A_LH10', 'A_LyonSchool', 'A_SFHH', 'A_Thiers13']
 
 # Choosing Contact vs. Presence Network
-contact = False
+contact = True
 
 # Defining variables for type of network
 if contact == True:
@@ -35,11 +37,11 @@ class NetworkStat():
 		self.d_avg = int((self.m / self.n)*2)
 
 	def density(self):
-		self.den = 2 * self.m / (self.n(self.n - 1))
+		return 2 * self.m / (self.n*(self.n - 1))
 
 	def domEig(self):
 		w, v = LA.eig(self.data)
-		self.lam = np.amax([np.amax(w), np.amax(-w)]).real
+		return np.amax([np.amax(w), np.amax(-w)]).real
 
 	def degreeDis(self):
 		self.degD = np.sum(self.data, axis = 1)
@@ -67,6 +69,8 @@ def main():
 	fig2.suptitle(f'Clustering for {title}', fontsize=30)
 
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
+	density = []
+	dom_eig = []
 	for i, name in enumerate(filenames):
 
 		# Importing Network
@@ -78,15 +82,11 @@ def main():
 		net = NetworkStat(A)
 		print(f' Number of Vertices: {net.n} | Number of Edges: {net.m}')
 
-		# Network Degree
-		net.averageDegree()
-		print(f' Average Degree: {net.d_avg}')
+		# Getting statistics
+		density.append(net.density())
+		dom_eig.append(net.domEig())
 
-		# Dominant Eigenvalue
-		net.domEig()
-		print(f' Dominant Eigenvalue: {net.lam:0.3f}')
-
-		# Dominant Eigenvalue
+		# Degree Distribution
 		net.degreeDis()
 		deg_vector = net.degD
 
@@ -113,6 +113,11 @@ def main():
 	fig1.savefig(f'./figures/deg_{folder}')
 	fig2.savefig(f'./figures/clust_{folder}')
 
+	d = {'Density': density, 'Dominent Eigenvalue': dom_eig}
+	df = pd.DataFrame(data=d)
+	df.to_csv(f'{folder}_stats', index=False, float_format='%.3f')
+
+	# print(df)
 	# plt.show()
 
 # ========================================================
