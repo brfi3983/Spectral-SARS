@@ -135,7 +135,7 @@ def main():
 		ax4[i].fill_between(p0_array, 0, avg_nr, facecolor='tan', alpha=0.8)
 		ax4[i].plot(p0_array, avg_nr, color='black', ls='--')
 
-		fig_k.savefig(name + '_p0_dist.png')
+		fig_k.savefig(f'./figures/{name}_p0_dist.png')
 		print('Done with dataset.')
 
 	# Cleaning up figure
@@ -143,8 +143,8 @@ def main():
 	fig4.subplots_adjust(hspace=0.4, wspace=0.2)
 
 	# Saving Figures
-	fig3.savefig('Percentage.png')
-	fig4.savefig('AverageNumRecovered.png')
+	fig3.savefig('./figures/Percentage.png')
+	fig4.savefig('./figures/AverageNumRecovered.png')
 
 	# plt.show()
 
