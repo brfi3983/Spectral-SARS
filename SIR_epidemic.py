@@ -25,10 +25,8 @@ class SIR_class():
 
         # Initialize variables
         num_timesteps = T/delta_t
-        # q = mu * delta_t
-        # p = beta * delta_t
-        p = 1
-        q = 1
+        q = mu * delta_t
+        p = beta * delta_t
 
         v_0 = rand.randint(0, self.n - 1)
 

@@ -52,11 +52,12 @@ def main():
 
 	# figures
 	fig1 = plt.figure()
-	fig2 = plt.figure()
+	fig2, ax2 = plt.subplots(3,2)
+	# fig3, ax3 = plt.subplots(3,2)
 
 	# figure titles
 	fig1.suptitle(title, fontsize=30)
-	fig2.suptitle('K Values', fontsize=30)
+	fig2.suptitle('test', fontsize=30)
 
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	for i, name in enumerate(filenames):
@@ -94,32 +95,35 @@ def main():
 		k_arr = [1, 2, 3, 4, 5]
 		B = 4e-4
 		T = 1e3
-		sims = {}
-		for k in k_arr:
-			sim = np.empty(0)
-			for i in range(100):
-				# print(np.median(A), A)
-				mu = 100 * B / k
-				# del_t = 1 / (B * np.median(A))
-				del_t = 1 / (B * 1)
-				# print(B, mu, del_t)
-				# exit()
-				[S, I, R] = model.SIR(B, mu, del_t, T, vaccinated=False)
-				# print(S,I,R)
-				sim = np.append(sim, R)
 
-			sims[str(k)] = sim
+		sims_R = {}
+		p0 = {}
+		for k in k_arr:
+			sim_R = np.empty(0)
+			mu = 100 * B / k
+			del_t = 1e-3 /B
+			for i in range(100):
+				[S, I, R] = model.SIR(B, mu, del_t, T, vaccinated=False)
+				sim_R = np.append(sim_R, R)
+
+			sims_R[str(k)] = sim_R
+			p0[str(k)] = B * net.d_avg / mu
 
 			# Plotting distribution of simulations for each k (for each dataset - CREATE NEW FIGURE or overlay histograms...)
 			ax2 = fig2.add_subplot(3, 2, k + 1)
-			ax2.hist(sims[str(k)], bins=net.n, ec='white')
-			ax2.set_title(f'k value of {k}')
-			ax2.set_xlabel('Node in Graph')
+			# ax3 = fig3.add_subplot(3, 2, k + 1)
+			# ax2.hist(sims[str(k)], bins=net.n, ec='white')
+			ax2.set_title(r'$p_0$ value of ' + str(p0[str(k)]))
+			# ax2.set_xlabel('Node in Graph')
+			# ax2 = fig2.add_axes
+			ax2.hist(sims_R[str(k)], bins=15, ec='white')
 
 		break
-
+		# print(p0['1'])
+		# print(sims['1'])
 	# Cleaning up figure
 	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
+	# ax2.legend()
 	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
 	plt.show()
 
