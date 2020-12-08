@@ -47,10 +47,10 @@ class SIR_class():
         elif (vaccinated == 2):
             degreelist = np.zeros(self.n)
             for node in range(self.n):
-                degreelist[node] = numpy.sum(self.A[node])
+                degreelist[node] = np.sum(self.A[node])
             ind = (-degreelist).argsort()[:20]  # finds indexes of 20 largest elements
             for v in ind:
-                S = S[S != int[v]]
+                S = S[S != degreelist[v]]
                 R = np.append(R, v)
 
         # Main loop
