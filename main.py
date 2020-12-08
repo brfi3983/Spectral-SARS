@@ -103,7 +103,7 @@ def main():
 			mu = 100 * B / k
 			del_t = 1e-3 /B
 			for i in range(100):
-				[S, I, R] = model.SIR(B, mu, del_t, T, vaccinated=0)
+				[S, I, R] = model.SIR(B, mu, T, vaccinated=0)
 				sim_R = np.append(sim_R, R)
 
 			sims_R[str(k)] = sim_R
