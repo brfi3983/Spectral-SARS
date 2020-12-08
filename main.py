@@ -92,31 +92,31 @@ def main():
 		## SIR Model for Matrix A (100 simulations)
 		model = SIR_class(A)
 
-		k_arr = [1, 2, 3, 4, 5]
+
 		B = 4e-4
 		T = 1e3
 
 		sims_R = {}
 		p0 = {}
-		for k in k_arr:
-			sim_R = np.empty(0)
-			mu = 100 * B / k
-			del_t = 1e-3 /B
-			for i in range(100):
-				[S, I, R] = model.SIR(B, mu, T, vaccinated=2)
-				sim_R = np.append(sim_R, R)
 
-			sims_R[str(k)] = sim_R
-			p0[str(k)] = B * net.d_avg / mu
+		sim_R = np.empty(0)
+		mu = 100 * B
 
-			# Plotting distribution of simulations for each k (for each dataset - CREATE NEW FIGURE or overlay histograms...)
-			ax2 = fig2.add_subplot(3, 2, k + 1)
-			# ax3 = fig3.add_subplot(3, 2, k + 1)
-			# ax2.hist(sims[str(k)], bins=net.n, ec='white')
-			ax2.set_title(r'$p_0$ value of ' + str(p0[str(k)]))
-			# ax2.set_xlabel('Node in Graph')
-			# ax2 = fig2.add_axes
-			ax2.hist(sims_R[str(k)], bins=15, ec='white')
+		for i in range(10):
+			[S, I, R] = model.SIR(B, mu, T, vaccinated=2)
+			sim_R = np.append(sim_R, R)
+
+		sims_R[str(k)] = sim_R
+		p0[str(k)] = B * net.d_avg / mu
+
+		# Plotting distribution of simulations for each k (for each dataset - CREATE NEW FIGURE or overlay histograms...)
+		ax2 = fig2.add_subplot(3, 2, k + 1)
+		# ax3 = fig3.add_subplot(3, 2, k + 1)
+		# ax2.hist(sims[str(k)], bins=net.n, ec='white')
+		ax2.set_title(r'$p_0$ value of ' + str(p0[str(k)]))
+		# ax2.set_xlabel('Node in Graph')
+		# ax2 = fig2.add_axes
+		ax2.hist(sims_R[str(k)], bins=15, ec='white')
 
 		break
 		# print(p0['1'])
