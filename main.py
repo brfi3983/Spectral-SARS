@@ -9,7 +9,7 @@ plt.style.use('ggplot')
 pres_filenames = ['A_pres_InVS13', 'A_pres_InVS15', 'A_pres_LH10', 'A_pres_LyonSchool', 'A_pres_SFHH', 'A_pres_Thiers13']
 cont_filenames = ['A_lnVS13', 'A_lnVS15', 'A_LH10', 'A_LyonSchool', 'A_SFHH', 'A_Thiers13']
 
-# Choosing Contact vs. Presence Network
+# Choosing Contact vs. Presence Network AND part (2 = #5 and 3 = #6 in problem set)
 contact = True
 
 # Defining variables for type of network
@@ -50,16 +50,17 @@ class NetworkStat():
 # ========================================================
 def main():
 
-	# figures
-	fig1 = plt.figure()
-	fig2, ax2 = plt.subplots(3,2)
-	# fig3, ax3 = plt.subplots(3,2)
+	# Fraction above threshold
+	fig3, ax3 = plt.subplots(3, 2, figsize=(16, 9))
+	fig3.suptitle(title, fontsize=30)
+	ax3 = ax3.ravel()  # changed it to vector for programming ease
 
-	# figure titles
-	fig1.suptitle(title, fontsize=30)
-	fig2.suptitle('test', fontsize=30)
+	# Average # recovered above threshold
+	fig4, ax4 = plt.subplots(3,2, figsize=(16,9))
+	fig4.suptitle(title, fontsize=30)
+	ax4 = ax4.ravel() # same as above
 
-	# Cycle through the networks, find relevant stats, and then add them to the subplot
+	# Cycle through the networks
 	for i, name in enumerate(filenames):
 
 		# Importing Network
@@ -68,64 +69,84 @@ def main():
 		# Turning matrix into an Object
 		print('\n========================================================')
 		print(f' --- {name} --- ')
+
+		# Get basic Network Statistics
 		net = NetworkStat(A)
-		print(f' Number of Vertices: {net.n} | Number of Edges: {net.m}')
-
-		# Network Degree
 		net.averageDegree()
-		print(f' Average Degree: {net.d_avg}')
 
-		# Dominant Eigenvalue
-		net.domEig()
-		print(f' Dominant Eigenvalue: {net.lam:0.3f}')
-
-		# Dominant Eigenvalue
-		net.degreeDis()
-		deg_vector = net.degD
-
-		# Plotting the Histograms
-		ax1 = fig1.add_subplot(3, 2, i + 1)
-		ax1.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
-		ax1.set_title(name)
-		ax1.set_xlabel('Degree')
-
-		## SIR Model for Matrix A (100 simulations)
+		# SIR Model for Matrix A (100 simulations)
 		model = SIR_class(A)
 
+		# Constants and Iterables
 		k_arr = [1, 2, 3, 4, 5]
 		B = 4e-4
 		T = 1e3
+		nr = 0.2  #fraction threshold
 
+		# Dictionaries and Arrays to store data
 		sims_R = {}
 		p0 = {}
+		frac_nr = []
+		avg_nr = []
+
+		# Loop over possible k values
+		fig_k = plt.figure(figsize=(16, 9))
+		fig_k.suptitle(name, fontsize=30)
+
+		# Loop through possible k (and thus p0) values...
 		for k in k_arr:
-			sim_R = np.empty(0)
+
+			sim_R = np.empty(0) # Array to store the 100 simulations
 			mu = 100 * B / k
-			del_t = 1e-3 /B
-			for i in range(100):
-				[S, I, R] = model.SIR(B, mu, del_t, T, vaccinated=False)
+			del_t = 1e-3 / B
+
+			# Run simulation 100 times
+			print(f'Running Simulations... (k={k})')
+			for j in range(100):
+				[S, I, R] = model.SIR(B, mu, T, vaccinated=False)
 				sim_R = np.append(sim_R, R)
 
+			# Store Results
 			sims_R[str(k)] = sim_R
 			p0[str(k)] = B * net.d_avg / mu
+			frac_nr.append(sum(sim_R / net.n > nr) / 100)
+			avg_nr.append(np.mean(sim_R[sim_R / net.n > nr]))
 
-			# Plotting distribution of simulations for each k (for each dataset - CREATE NEW FIGURE or overlay histograms...)
-			ax2 = fig2.add_subplot(3, 2, k + 1)
-			# ax3 = fig3.add_subplot(3, 2, k + 1)
-			# ax2.hist(sims[str(k)], bins=net.n, ec='white')
-			ax2.set_title(r'$p_0$ value of ' + str(p0[str(k)]))
-			# ax2.set_xlabel('Node in Graph')
-			# ax2 = fig2.add_axes
-			ax2.hist(sims_R[str(k)], bins=15, ec='white')
+			# Plotting distribution of simulations for each k (#4 in problem set)
+			ax2 = fig_k.add_subplot(3, 2, k)
+			ax2.set_title(r'$p_0$ value of ' + str("%.2f" % round(p0[str(k)],2)))
+			ax2.hist(sims_R[str(k)], bins=15, ec='white', color='dimgrey')
 
-		break
-		# print(p0['1'])
-		# print(sims['1'])
+		# Adjusting figure k and creating a list from p0 dictionary
+		fig_k.subplots_adjust(hspace=0.4, wspace=0.1)
+		p0_array = list(p0.values())
+
+		# Plotting percentage nodes recovered (above threshold)
+		ax3[i].set_title(name)
+		ax3[i].set_xlabel(r'$p_0$')
+		ax3[i].set_ylabel('Percentage')
+		ax3[i].fill_between(p0_array, 0, frac_nr, facecolor='seagreen', alpha=0.6)
+		ax3[i].plot(p0_array, frac_nr, color='black', ls='--')
+
+		# Plotting average number of nodes recovered (above threshold)
+		ax4[i].set_title(name)
+		ax4[i].set_xlabel(r'$p_0$')
+		ax4[i].set_ylabel('Avg. # of Recovered')
+		ax4[i].fill_between(p0_array, 0, avg_nr, facecolor='tan', alpha=0.8)
+		ax4[i].plot(p0_array, avg_nr, color='black', ls='--')
+
+		fig_k.savefig(name + '_p0_dist.png')
+		print('Done with dataset.')
+
 	# Cleaning up figure
-	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
-	# ax2.legend()
-	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
-	plt.show()
+	fig3.subplots_adjust(hspace=0.4, wspace=0.2)
+	fig4.subplots_adjust(hspace=0.4, wspace=0.2)
+
+	# Saving Figures
+	fig3.savefig('Percentage.png')
+	fig4.savefig('AverageNumRecovered.png')
+
+	# plt.show()
 
 # ========================================================
 if __name__ == "__main__":

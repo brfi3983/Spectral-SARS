@@ -53,9 +53,6 @@ class SIR_class():
                 S = S[S != int[v]]
                 R = np.append(R, v)
 
-
-
-
         # Main loop
         for t in (1,num_timesteps):
 
