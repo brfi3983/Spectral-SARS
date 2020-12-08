@@ -10,7 +10,7 @@ pres_filenames = ['A_pres_InVS13', 'A_pres_InVS15', 'A_pres_LH10', 'A_pres_LyonS
 cont_filenames = ['A_lnVS13', 'A_lnVS15', 'A_LH10', 'A_LyonSchool', 'A_SFHH', 'A_Thiers13']
 
 # Choosing Contact vs. Presence Network
-contact = True
+contact = False
 
 # Defining variables for type of network
 if contact == True:
@@ -115,7 +115,7 @@ def main():
 
 	d = {'Density': density, 'Dominent Eigenvalue': dom_eig}
 	df = pd.DataFrame(data=d)
-	df.to_csv(f'{folder}_stats', index=False, float_format='%.3f')
+	df.to_csv(f'{folder}_stats.csv', index=False, float_format='%.3f')
 
 	# print(df)
 	# plt.show()
