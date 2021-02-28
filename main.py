@@ -69,6 +69,17 @@ def main():
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	density = []
 	dom_eig = []
+	# Fraction above threshold
+	fig3, ax3 = plt.subplots(3, 2, figsize=(16, 9))
+	fig3.suptitle(title, fontsize=30)
+	ax3 = ax3.ravel()  # changed it to vector for programming ease
+
+	# Average # recovered above threshold
+	fig4, ax4 = plt.subplots(3,2, figsize=(16,9))
+	fig4.suptitle(title, fontsize=30)
+	ax4 = ax4.ravel() # same as above
+
+	# Cycle through the networks
 	for i, name in enumerate(filenames):
 
 		# Importing Network
@@ -77,8 +88,6 @@ def main():
 		# Turning matrix into an Object
 		print('\n========================================================')
 		print(f' --- {name} --- ')
-		net = NetworkStat(A)
-		print(f' Number of Vertices: {net.n} | Number of Edges: {net.m}')
 
 		# Getting statistics
 		density.append(net.density())
@@ -117,9 +126,20 @@ def main():
 		model = SIR_class(A)
 
 
+		# Get basic Network Statistics
+		net = NetworkStat(A)
+		net.averageDegree()
+
+		# SIR Model for Matrix A (100 simulations)
+		model = SIR_class(A)
+
+		# Constants and Iterables
+		k_arr = [1, 2, 3, 4, 5]
 		B = 4e-4
 		T = 1e3
+		nr = 0.2  #fraction threshold
 
+		# Dictionaries and Arrays to store data
 		sims_R = {}
 		p0 = {}
 
@@ -145,6 +165,67 @@ def main():
 
 	d = {'Density': density, 'Dominent Eigenvalue': dom_eig}
 	df = pd.DataFrame(data=d)
+		frac_nr = []
+		avg_nr = []
+
+		# Loop over possible k values
+		fig_k = plt.figure(figsize=(16, 9))
+		fig_k.suptitle(name, fontsize=30)
+
+		# Loop through possible k (and thus p0) values...
+		for k in k_arr:
+
+			sim_R = np.empty(0) # Array to store the 100 simulations
+			mu = 100 * B / k
+			del_t = 1e-3 / B
+
+			# Run simulation 100 times
+			print(f'Running Simulations... (k={k})')
+			for j in range(100):
+				[S, I, R] = model.SIR(B, mu, T, vaccinated=False)
+				sim_R = np.append(sim_R, R)
+
+			# Store Results
+			sims_R[str(k)] = sim_R
+			p0[str(k)] = B * net.d_avg / mu
+			frac_nr.append(sum(sim_R / net.n > nr) / 100)
+			avg_nr.append(np.mean(sim_R[sim_R / net.n > nr]))
+
+			# Plotting distribution of simulations for each k (#4 in problem set)
+			ax2 = fig_k.add_subplot(3, 2, k)
+			ax2.set_title(r'$p_0$ value of ' + str("%.2f" % round(p0[str(k)],2)))
+			ax2.hist(sims_R[str(k)], bins=15, ec='white', color='dimgrey')
+
+		# Adjusting figure k and creating a list from p0 dictionary
+		fig_k.subplots_adjust(hspace=0.4, wspace=0.1)
+		p0_array = list(p0.values())
+
+		# Plotting percentage nodes recovered (above threshold)
+		ax3[i].set_title(name)
+		ax3[i].set_xlabel(r'$p_0$')
+		ax3[i].set_ylabel('Percentage')
+		ax3[i].fill_between(p0_array, 0, frac_nr, facecolor='seagreen', alpha=0.6)
+		ax3[i].plot(p0_array, frac_nr, color='black', ls='--')
+
+		# Plotting average number of nodes recovered (above threshold)
+		ax4[i].set_title(name)
+		ax4[i].set_xlabel(r'$p_0$')
+		ax4[i].set_ylabel('Avg. # of Recovered')
+		ax4[i].fill_between(p0_array, 0, avg_nr, facecolor='tan', alpha=0.8)
+		ax4[i].plot(p0_array, avg_nr, color='black', ls='--')
+
+		fig_k.savefig(f'./figures/{name}_p0_dist.png')
+		print('Done with dataset.')
+
+	# Cleaning up figure
+	fig3.subplots_adjust(hspace=0.4, wspace=0.2)
+	fig4.subplots_adjust(hspace=0.4, wspace=0.2)
+
+	# Saving Figures
+	fig3.savefig('./figures/Percentage.png')
+	fig4.savefig('./figures/AverageNumRecovered.png')
+
+	# plt.show()
 
 # ========================================================
 if __name__ == "__main__":
