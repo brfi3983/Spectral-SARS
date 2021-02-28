@@ -26,9 +26,64 @@ class SIR_class():
         # Initialize variables
         num_timesteps = T/delta_t
         q = mu * delta_t
-        p = beta * delta_t * 100
-        #print("p",p)
-        #print("q",q)
+        p = beta * delta_t
+        #p = 1
+        #q = 1
+
+        v_0 = rand.randint(0, self.n - 1)
+
+        # Initializing Arrays
+        S = np.arange(0,self.n)  # all nodes susceptible at first
+        S = S[S != v_0]   # remove first infected
+        I = np.array([v_0])
+        R = np.empty(0)
+
+        # The effect of vaccination (1 = random, 2 = highest degree)
+        if (vaccinated == 1):
+            for v in range(20):
+                vax = rand.randint(0,self.n - 1)
+                S = S[S != vax]
+                R = np.append(R, v)
+        elif (vaccinated == 2):
+            degreelist = np.zeros(self.n)
+            for node in range(self.n):
+                degreelist[node] = np.sum(self.A[node])
+            ind = (-degreelist).argsort()[:20]  # finds indexes of 20 largest elements
+            for v in ind:
+                S = S[S != degreelist[v]]
+                R = np.append(R, v)
+
+
+
+
+        # Main loop
+        for t in (1,num_timesteps):
+
+            # For each infected node
+            for v in I:
+
+                for s in S:
+                    # For each susceptible node that is a neighbor of the infected one
+                    if self.A[v, s] == 1:
+
+                        # Determining if node's neighbor is infected
+                        r = rand.uniform(0,1)
+                        if r < p:
+                            I = np.append(I, s)
+
+                # clean up old array
+                S = self.remove_nodes(S, I)
+
+                # Determining if each node recovers
+                r = rand.uniform(0,1)
+                if r < q:
+                    R = np.append(R, v)
+
+            # clean up old array
+            I = self.remove_nodes(I, R)
+
+        return [S, I, R]
+
 
 
         v_0 = rand.randint(0, self.n - 1)

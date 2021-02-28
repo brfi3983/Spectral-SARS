@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from numpy import linalg as LA
 import networkx as nx
 import pandas as pd
+from SIR_epidemic import *
 
 plt.style.use('ggplot')
 
@@ -51,14 +52,6 @@ class NetworkStat():
 
 	def cluster(self):
 
-		# # Cardinality of the loops (loops are on diagonal)
-		# triangles = np.linalg.matrix_power(self.data, 3)
-		# diag = np.diag(triangles)
-
-		# # Clustering Vector along with coefficient
-		# cc_vec = 2 * diag / (self.degD * (self.degD - 1))
-		# self.cc_vec = cc_vec[cc_vec < 1e8] # removing infinity values
-
 		self.cc_vec = list(nx.clustering(nx.Graph(self.data)).values())
 		self.cc = np.mean(self.cc_vec)
 
@@ -97,7 +90,6 @@ def main():
 
 
 		L = np.diag(deg_vector) - A
-		# plt.imshow(L)
 
 		eigvals, eigvect = LA.eig(L)
 		eigenvals_sorted_indices = np.argsort(eigvals)
@@ -106,8 +98,7 @@ def main():
 		zero_eigenvals_index = np.argwhere(abs(eigvals) < 1e-3)
 		print(eigvals[zero_eigenvals_index])
 		plt.plot(range(1,eigvals.size + 1), eigenvals_sorted)
-		# plt.show()
-		# exit()
+
 		# Clustering coefficient and distribution (NOTICE: .cluster() must be run after degree distribution)
 		net.cluster()
 		cc_vec, cc = net.cc_vec, net.cc
@@ -123,20 +114,37 @@ def main():
 		ax2.hist(cc_vec, bins=net.n, ec='white', color=color2)
 		ax2.set_title(name)
 		ax2.set_xlabel('Clustering Coefficient')
+		model = SIR_class(A)
+
+
+		B = 4e-4
+		T = 1e3
+
+		sims_R = {}
+		p0 = {}
+
+		sim_R = np.empty(0)
+		mu = 100 * B
+
+		for i in range(10):
+			[S, I, R] = model.SIR(B, mu, T, vaccinated=2)
+			sim_R = np.append(sim_R, R)
+
+		sims_R[str(k)] = sim_R
+		p0[str(k)] = B * net.d_avg / mu
+
+		# Plotting distribution of simulations for each k (for each dataset - CREATE NEW FIGURE or overlay histograms...)
+		ax2 = fig2.add_subplot(3, 2, k + 1)
+		ax2.set_title(r'$p_0$ value of ' + str(p0[str(k)]))
+		ax2.hist(sims_R[str(k)], bins=15, ec='white')
 
 	# Cleaning up figure
 	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
 	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
 
-	# fig1.savefig(f'./figures/deg_{folder}')
-	# fig2.savefig(f'./figures/clust_{folder}')
 
 	d = {'Density': density, 'Dominent Eigenvalue': dom_eig}
 	df = pd.DataFrame(data=d)
-	# df.to_csv(f'{folder}_stats.csv', index=False, float_format='%.3f')
-
-	# print(df)
-	# plt.show()
 
 # ========================================================
 if __name__ == "__main__":
