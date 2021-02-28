@@ -1,4 +1,5 @@
 import numpy as np
+import networkx as nx
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
 import networkx as nx
@@ -65,6 +66,15 @@ def main():
 	# Figure titles
 	fig1.suptitle(f'Degree\'s for {title}', fontsize=30)
 	fig2.suptitle(f'Clustering for {title}', fontsize=30)
+	# Initializing figures
+	fig1 = plt.figure(figsize=(16,9))
+	fig2 = plt.figure(figsize=(16,9))
+	fig3 = plt.figure(figsize=(16,9))
+
+	# Titles for figures
+	fig1.suptitle(title, fontsize=30)
+	fig2.suptitle(f'Eigenvalues for {title}', fontsize=30)
+	fig3.suptitle(f'Graph\'s for {title}', fontsize=30)
 
 	# Cycle through the networks, find relevant stats, and then add them to the subplot
 	density = []
@@ -84,6 +94,9 @@ def main():
 
 		# Importing Network
 		A = np.genfromtxt('./' + str(folder) + '/' + str(name) + '.csv', delimiter=',')
+
+		# Printing Graph (testing)
+		G = nx.Graph(A)
 
 		# Turning matrix into an Object
 		print('\n========================================================')
@@ -224,6 +237,26 @@ def main():
 	# Saving Figures
 	fig3.savefig('./figures/Percentage.png')
 	fig4.savefig('./figures/AverageNumRecovered.png')
+		# Plotting the Histogram of Eigenvalues
+		w, v = LA.eig(A)
+		ax2 = fig2.add_subplot(3, 2, i + 1)
+		ax2.hist(w, color='black', ec='white', bins=net.n)
+		ax2.set_title(name)
+		ax2.set_xlabel('Eigenvalues')
+
+		# Plotting the Graphs
+		ax3 = fig3.add_subplot(3, 2, i + 1)
+		nx.draw(G, node_color=range(A.shape[0]), ax=ax3)
+		ax3.set_title(name)
+
+	# Cleaning up figure
+	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
+	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
+
+	# Saving Figures
+	fig1.savefig(f'./figures/hist_{folder}.png')
+	fig2.savefig(f'./figures/eig_{folder}.png')
+	fig3.savefig(f'./figures/graph_{folder}.png')
 
 	# plt.show()
 
