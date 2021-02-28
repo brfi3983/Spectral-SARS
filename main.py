@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import linalg as LA
+import networkx as nx
 import pandas as pd
 
 plt.style.use('ggplot')
@@ -44,17 +45,21 @@ class NetworkStat():
 		return np.amax([np.amax(w), np.amax(-w)]).real
 
 	def degreeDis(self):
-		self.degD = np.sum(self.data, axis = 1)
+		# self.degD = np.sum(self.data, axis = 1)
+		G = nx.Graph(self.data)
+		self.degD = [G.degree(n) for n in G.nodes()]
 
 	def cluster(self):
 
-		# Cardinality of the loops (loops are on diagonal)
-		triangles = np.linalg.matrix_power(self.data, 3)
-		diag = np.diag(triangles)
+		# # Cardinality of the loops (loops are on diagonal)
+		# triangles = np.linalg.matrix_power(self.data, 3)
+		# diag = np.diag(triangles)
 
-		# Clustering Vector along with coefficient
-		cc_vec = 2 * diag / (self.degD * (self.degD - 1))
-		self.cc_vec = cc_vec[cc_vec < 1e8] # removing infinity values
+		# # Clustering Vector along with coefficient
+		# cc_vec = 2 * diag / (self.degD * (self.degD - 1))
+		# self.cc_vec = cc_vec[cc_vec < 1e8] # removing infinity values
+
+		self.cc_vec = list(nx.clustering(nx.Graph(self.data)).values())
 		self.cc = np.mean(self.cc_vec)
 
 # ========================================================
@@ -90,10 +95,23 @@ def main():
 		net.degreeDis()
 		deg_vector = net.degD
 
+
+		L = np.diag(deg_vector) - A
+		# plt.imshow(L)
+
+		eigvals, eigvect = LA.eig(L)
+		eigenvals_sorted_indices = np.argsort(eigvals)
+		eigenvals_sorted = eigvals[eigenvals_sorted_indices]
+
+		zero_eigenvals_index = np.argwhere(abs(eigvals) < 1e-3)
+		print(eigvals[zero_eigenvals_index])
+		plt.plot(range(1,eigvals.size + 1), eigenvals_sorted)
+		# plt.show()
+		# exit()
 		# Clustering coefficient and distribution (NOTICE: .cluster() must be run after degree distribution)
 		net.cluster()
 		cc_vec, cc = net.cc_vec, net.cc
-
+		print(f'Cluster Coefficient Average: {cc:0.3f}')
 		# Plotting Degree Histograms
 		ax1 = fig1.add_subplot(3, 2, i + 1)
 		ax1.hist(deg_vector, bins=net.n, ec='white', density=True, color=color)
@@ -110,12 +128,12 @@ def main():
 	fig1.subplots_adjust(hspace=0.4, wspace = 0.1)
 	fig2.subplots_adjust(hspace=0.4, wspace = 0.1)
 
-	fig1.savefig(f'./figures/deg_{folder}')
-	fig2.savefig(f'./figures/clust_{folder}')
+	# fig1.savefig(f'./figures/deg_{folder}')
+	# fig2.savefig(f'./figures/clust_{folder}')
 
 	d = {'Density': density, 'Dominent Eigenvalue': dom_eig}
 	df = pd.DataFrame(data=d)
-	df.to_csv(f'{folder}_stats.csv', index=False, float_format='%.3f')
+	# df.to_csv(f'{folder}_stats.csv', index=False, float_format='%.3f')
 
 	# print(df)
 	# plt.show()
